@@ -19,19 +19,18 @@
 /**
  * @file
  *
- * Define SAMPLE App Events IDs
+ * Define HW App Message IDs
+ *
+ * \note The HW App assumes default configuration which uses V1 of message id implementation
  */
 
-#ifndef SAMPLE_APP_EVENTS_H
-#define SAMPLE_APP_EVENTS_H
+#ifndef HW_APP_MSGIDS_H
+#define HW_APP_MSGIDS_H
 
-#define SAMPLE_APP_RESERVED_EID          0
-#define SAMPLE_APP_STARTUP_INF_EID       1
-#define SAMPLE_APP_COMMAND_ERR_EID       2
-#define SAMPLE_APP_COMMANDNOP_INF_EID    3
-#define SAMPLE_APP_COMMANDRST_INF_EID    4
-#define SAMPLE_APP_INVALID_MSGID_ERR_EID 5
-#define SAMPLE_APP_LEN_ERR_EID           6
-#define SAMPLE_APP_PIPE_ERR_EID          7
+/* V1 Command Message IDs must be 0x18xx */
+#define HW_APP_CMD_MID     0x1886
+#define HW_APP_SEND_HK_MID 0x1887
+/* V1 Telemetry Message IDs must be 0x08xx */
+#define HW_APP_HK_TLM_MID 0x0884
 
-#endif /* SAMPLE_APP_EVENTS_H */
+#endif /* HW_APP_MSGIDS_H */

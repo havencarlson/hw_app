@@ -16,20 +16,22 @@
  * limitations under the License.
  ************************************************************************/
 
-#include "cfe_tbl_filedef.h" /* Required to obtain the CFE_TBL_FILEDEF macro definition */
-#include "sample_app_table.h"
+/**
+ * @file
+ *
+ * Define hw app table
+ */
+
+#ifndef HW_APP_TABLE_H
+#define HW_APP_TABLE_H
 
 /*
-** The following is an example of the declaration statement that defines the desired
-** contents of the table image.
+** Table structure
 */
-SAMPLE_APP_Table_t SampleAppTable = {1, 2};
+typedef struct
+{
+    uint16 Int1;
+    uint16 Int2;
+} HW_APP_Table_t;
 
-/*
-** The macro below identifies:
-**    1) the data structure type to use as the table image format
-**    2) the name of the table to be placed into the cFE Table File Header
-**    3) a brief description of the contents of the file image
-**    4) the desired name of the table image binary file that is cFE compatible
-*/
-CFE_TBL_FILEDEF(SampleAppTable, SAMPLE_APP.SampleAppTable, Table Utility Test Table, sample_app_tbl.tbl)
+#endif /* HW_APP_TABLE_H */

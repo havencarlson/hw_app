@@ -19,19 +19,38 @@
 /**
  * @file
  *
- * Define sample app table
+ * Common definitions for all hw_app coverage tests
  */
 
-#ifndef SAMPLE_APP_TABLE_H
-#define SAMPLE_APP_TABLE_H
+#ifndef HW_APP_COVERAGETEST_COMMON_H
+#define HW_APP_COVERAGETEST_COMMON_H
 
 /*
-** Table structure
-*/
-typedef struct
-{
-    uint16 Int1;
-    uint16 Int2;
-} SAMPLE_APP_Table_t;
+ * Includes
+ */
 
-#endif /* SAMPLE_APP_TABLE_H */
+#include "utassert.h"
+#include "uttest.h"
+#include "utstubs.h"
+
+#include "cfe.h"
+#include "hw_app_events.h"
+#include "hw_app.h"
+#include "hw_app_table.h"
+
+/*
+ * Macro to add a test case to the list of tests to execute
+ */
+#define ADD_TEST(test) UtTest_Add((Test_##test), HW_UT_Setup, HW_UT_TearDown, #test)
+
+/*
+ * Setup function prior to every test
+ */
+void HW_UT_Setup(void);
+
+/*
+ * Teardown function after every test
+ */
+void HW_UT_TearDown(void);
+
+#endif /* HW_APP_COVERAGETEST_COMMON_H */

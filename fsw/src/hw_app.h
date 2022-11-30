@@ -19,11 +19,11 @@
 /**
  * @file
  *
- * Main header file for the SAMPLE application
+ * Main header file for the HW application
  */
 
-#ifndef SAMPLE_APP_H
-#define SAMPLE_APP_H
+#ifndef HW_APP_H
+#define HW_APP_H
 
 /*
 ** Required header files.
@@ -34,21 +34,21 @@
 #include "cfe_sb.h"
 #include "cfe_es.h"
 
-#include "sample_app_perfids.h"
-#include "sample_app_msgids.h"
-#include "sample_app_msg.h"
+#include "hw_app_perfids.h"
+#include "hw_app_msgids.h"
+#include "hw_app_msg.h"
 
 /***********************************************************************/
-#define SAMPLE_APP_PIPE_DEPTH 32 /* Depth of the Command Pipe for Application */
+#define HW_APP_PIPE_DEPTH 32 /* Depth of the Command Pipe for Application */
 
-#define SAMPLE_APP_NUMBER_OF_TABLES 1 /* Number of Table(s) */
+#define HW_APP_NUMBER_OF_TABLES 1 /* Number of Table(s) */
 
 /* Define filenames of default data images for tables */
-#define SAMPLE_APP_TABLE_FILE "/cf/sample_app_tbl.tbl"
+#define HW_APP_TABLE_FILE "/cf/hw_app_tbl.tbl"
 
-#define SAMPLE_APP_TABLE_OUT_OF_RANGE_ERR_CODE -1
+#define HW_APP_TABLE_OUT_OF_RANGE_ERR_CODE -1
 
-#define SAMPLE_APP_TBL_ELEMENT_1_MAX 10
+#define HW_APP_TBL_ELEMENT_1_MAX 10
 /************************************************************************
 ** Type Definitions
 *************************************************************************/
@@ -67,7 +67,7 @@ typedef struct
     /*
     ** Housekeeping telemetry packet...
     */
-    SAMPLE_APP_HkTlm_t HkTlm;
+    HW_APP_HkTlm_t HkTlm;
 
     /*
     ** Run Status variable used in the main processing loop
@@ -85,28 +85,28 @@ typedef struct
     char   PipeName[CFE_MISSION_MAX_API_LEN];
     uint16 PipeDepth;
 
-    CFE_TBL_Handle_t TblHandles[SAMPLE_APP_NUMBER_OF_TABLES];
-} SAMPLE_APP_Data_t;
+    CFE_TBL_Handle_t TblHandles[HW_APP_NUMBER_OF_TABLES];
+} HW_APP_Data_t;
 
 /****************************************************************************/
 /*
 ** Local function prototypes.
 **
-** Note: Except for the entry point (SAMPLE_APP_Main), these
+** Note: Except for the entry point (HW_APP_Main), these
 **       functions are not called from any other source module.
 */
-void  SAMPLE_APP_Main(void);
-int32 SAMPLE_APP_Init(void);
-void  SAMPLE_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr);
-void  SAMPLE_APP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr);
-int32 SAMPLE_APP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg);
-int32 SAMPLE_APP_ResetCounters(const SAMPLE_APP_ResetCountersCmd_t *Msg);
-int32 SAMPLE_APP_Process(const SAMPLE_APP_ProcessCmd_t *Msg);
-int32 SAMPLE_APP_Noop(const SAMPLE_APP_NoopCmd_t *Msg);
-void  SAMPLE_APP_GetCrc(const char *TableName);
+void  HW_APP_Main(void);
+int32 HW_APP_Init(void);
+void  HW_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr);
+void  HW_APP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr);
+int32 HW_APP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg);
+int32 HW_APP_ResetCounters(const HW_APP_ResetCountersCmd_t *Msg);
+int32 HW_APP_Process(const HW_APP_ProcessCmd_t *Msg);
+int32 HW_APP_Noop(const HW_APP_NoopCmd_t *Msg);
+void  HW_APP_GetCrc(const char *TableName);
 
-int32 SAMPLE_APP_TblValidationFunc(void *TblData);
+int32 HW_APP_TblValidationFunc(void *TblData);
 
-bool SAMPLE_APP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength);
+bool HW_APP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength);
 
-#endif /* SAMPLE_APP_H */
+#endif /* HW_APP_H */

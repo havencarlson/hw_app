@@ -24,26 +24,23 @@
 /*
 ** Include Files:
 */
-#include "hw_app_events.h"
-#include "hw_app_version.h"
+#include "hw_events.h"
+#include "hw_version.h"
 #include "hw_app.h"
-#include "hw_app_table.h"
 
-/* The sample_lib module provides the SAMPLE_LIB_Function() prototype */
 #include <string.h>
-#include "sample_lib.h"
 
 /*
 ** global data
 */
-HW_APP_Data_t HW_APP_Data;
+HW_Data_t HW_Data;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
 /*                                                                            */
 /* Application entry point and main process loop                              */
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
-void HW_APP_Main(void)
+void HW_Main(void)
 {
     int32            status;
     CFE_SB_Buffer_t *SBBufPtr;
@@ -51,56 +48,56 @@ void HW_APP_Main(void)
     /*
     ** Create the first Performance Log entry
     */
-    CFE_ES_PerfLogEntry(HW_APP_PERF_ID);
+    CFE_ES_PerfLogEntry(HW_PERF_ID);
 
     /*
     ** Perform application specific initialization
     ** If the Initialization fails, set the RunStatus to
     ** CFE_ES_RunStatus_APP_ERROR and the App will not enter the RunLoop
     */
-    status = HW_APP_Init();
+    status = HW_Init();
     if (status != CFE_SUCCESS)
     {
-        HW_APP_Data.RunStatus = CFE_ES_RunStatus_APP_ERROR;
+        HW_Data.RunStatus = CFE_ES_RunStatus_APP_ERROR;
     }
 
     /*
     ** HW Runloop
     */
-    while (CFE_ES_RunLoop(&HW_APP_Data.RunStatus) == true)
+    while (CFE_ES_RunLoop(&HW_Data.RunStatus) == true)
     {
         /*
         ** Performance Log Exit Stamp
         */
-        CFE_ES_PerfLogExit(HW_APP_PERF_ID);
+        CFE_ES_PerfLogExit(HW_PERF_ID);
 
         /* Pend on receipt of command packet */
-        status = CFE_SB_ReceiveBuffer(&SBBufPtr, HW_APP_Data.CommandPipe, CFE_SB_PEND_FOREVER);
+        status = CFE_SB_ReceiveBuffer(&SBBufPtr, HW_Data.CommandPipe, CFE_SB_PEND_FOREVER);
 
         /*
         ** Performance Log Entry Stamp
         */
-        CFE_ES_PerfLogEntry(HW_APP_PERF_ID);
+        CFE_ES_PerfLogEntry(HW_PERF_ID);
 
         if (status == CFE_SUCCESS)
         {
-            HW_APP_ProcessCommandPacket(SBBufPtr);
+            HW_ProcessCommandPacket(SBBufPtr);
         }
         else
         {
-            CFE_EVS_SendEvent(HW_APP_PIPE_ERR_EID, CFE_EVS_EventType_ERROR,
+            CFE_EVS_SendEvent(HW_PIPE_ERR_EID, CFE_EVS_EventType_ERROR,
                               "HW APP: SB Pipe Read Error, App Will Exit");
 
-            HW_APP_Data.RunStatus = CFE_ES_RunStatus_APP_ERROR;
+            HW_Data.RunStatus = CFE_ES_RunStatus_APP_ERROR;
         }
     }
 
     /*
     ** Performance Log Exit Stamp
     */
-    CFE_ES_PerfLogExit(HW_APP_PERF_ID);
+    CFE_ES_PerfLogExit(HW_PERF_ID);
 
-    CFE_ES_ExitApp(HW_APP_Data.RunStatus);
+    CFE_ES_ExitApp(HW_Data.RunStatus);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  */
@@ -108,25 +105,25 @@ void HW_APP_Main(void)
 /* Initialization                                                             */
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
-int32 HW_APP_Init(void)
+int32 HW_Init(void)
 {
     int32 status;
 
-    HW_APP_Data.RunStatus = CFE_ES_RunStatus_APP_RUN;
+    HW_Data.RunStatus = CFE_ES_RunStatus_APP_RUN;
 
     /*
     ** Initialize app command execution counters
     */
-    HW_APP_Data.CmdCounter = 0;
-    HW_APP_Data.ErrCounter = 0;
+    HW_Data.CmdCounter = 0;
+    HW_Data.ErrCounter = 0;
 
     /*
     ** Initialize app configuration data
     */
-    HW_APP_Data.PipeDepth = HW_APP_PIPE_DEPTH;
+    HW_Data.PipeDepth = HW_PIPE_DEPTH;
 
-    strncpy(HW_APP_Data.PipeName, "HW_APP_CMD_PIPE", sizeof(HW_APP_Data.PipeName));
-    HW_APP_Data.PipeName[sizeof(HW_APP_Data.PipeName) - 1] = 0;
+    strncpy(HW_Data.PipeName, "HW_CMD_PIPE", sizeof(HW_Data.PipeName));
+    HW_Data.PipeName[sizeof(HW_Data.PipeName) - 1] = 0;
 
     /*
     ** Register the events
@@ -141,13 +138,13 @@ int32 HW_APP_Init(void)
     /*
     ** Initialize housekeeping packet (clear user data area).
     */
-    CFE_MSG_Init(CFE_MSG_PTR(HW_APP_Data.HkTlm.TelemetryHeader), CFE_SB_ValueToMsgId(HW_APP_HK_TLM_MID),
-                 sizeof(HW_APP_Data.HkTlm));
+    CFE_MSG_Init(CFE_MSG_PTR(HW_Data.HkTlm.TelemetryHeader), CFE_SB_ValueToMsgId(HW_HK_TLM_MID),
+                 sizeof(HW_Data.HkTlm));
 
     /*
     ** Create Software Bus message pipe.
     */
-    status = CFE_SB_CreatePipe(&HW_APP_Data.CommandPipe, HW_APP_Data.PipeDepth, HW_APP_Data.PipeName);
+    status = CFE_SB_CreatePipe(&HW_Data.CommandPipe, HW_Data.PipeDepth, HW_Data.PipeName);
     if (status != CFE_SUCCESS)
     {
         CFE_ES_WriteToSysLog("HW App: Error creating pipe, RC = 0x%08lX\n", (unsigned long)status);
@@ -157,7 +154,8 @@ int32 HW_APP_Init(void)
     /*
     ** Subscribe to Housekeeping request commands
     */
-    status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(HW_APP_SEND_HK_MID), HW_APP_Data.CommandPipe);
+
+    status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(HW_SEND_HK_MID), HW_Data.CommandPipe);
     if (status != CFE_SUCCESS)
     {
         CFE_ES_WriteToSysLog("HW App: Error Subscribing to HK request, RC = 0x%08lX\n", (unsigned long)status);
@@ -167,7 +165,7 @@ int32 HW_APP_Init(void)
     /*
     ** Subscribe to ground command packets
     */
-    status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(HW_APP_CMD_MID), HW_APP_Data.CommandPipe);
+    status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(HW_CMD_MID), HW_Data.CommandPipe);
     if (status != CFE_SUCCESS)
     {
         CFE_ES_WriteToSysLog("HW App: Error Subscribing to Command, RC = 0x%08lX\n", (unsigned long)status);
@@ -175,24 +173,8 @@ int32 HW_APP_Init(void)
         return status;
     }
 
-    /*
-    ** Register Table(s)
-    */
-    status = CFE_TBL_Register(&HW_APP_Data.TblHandles[0], "HWAppTable", sizeof(HW_APP_Table_t),
-                              CFE_TBL_OPT_DEFAULT, HW_APP_TblValidationFunc);
-    if (status != CFE_SUCCESS)
-    {
-        CFE_ES_WriteToSysLog("HW App: Error Registering Table, RC = 0x%08lX\n", (unsigned long)status);
-
-        return status;
-    }
-    else
-    {
-        status = CFE_TBL_Load(HW_APP_Data.TblHandles[0], CFE_TBL_SRC_FILE, HW_APP_TABLE_FILE);
-    }
-
-    CFE_EVS_SendEvent(HW_APP_STARTUP_INF_EID, CFE_EVS_EventType_INFORMATION, "HW App Initialized.%s",
-                      HW_APP_VERSION_STRING);
+    CFE_EVS_SendEvent(HW_STARTUP_INF_EID, CFE_EVS_EventType_INFORMATION, "HW App Initialized.%s",
+                      HW_VERSION_STRING);
 
     return CFE_SUCCESS;
 }
@@ -204,7 +186,7 @@ int32 HW_APP_Init(void)
 /*     command pipe.                                                          */
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * *  * *  * * * * */
-void HW_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr)
+void HW_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr)
 {
     CFE_SB_MsgId_t MsgId = CFE_SB_INVALID_MSG_ID;
 
@@ -212,16 +194,16 @@ void HW_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr)
 
     switch (CFE_SB_MsgIdToValue(MsgId))
     {
-        case HW_APP_CMD_MID:
-            HW_APP_ProcessGroundCommand(SBBufPtr);
+        case HW_CMD_MID:
+            HW_ProcessGroundCommand(SBBufPtr);
             break;
 
-        case HW_APP_SEND_HK_MID:
-            HW_APP_ReportHousekeeping((CFE_MSG_CommandHeader_t *)SBBufPtr);
+        case HW_SEND_HK_MID:
+            HW_ReportHousekeeping((CFE_MSG_CommandHeader_t *)SBBufPtr);
             break;
 
         default:
-            CFE_EVS_SendEvent(HW_APP_INVALID_MSGID_ERR_EID, CFE_EVS_EventType_ERROR,
+            CFE_EVS_SendEvent(HW_INVALID_MSGID_ERR_EID, CFE_EVS_EventType_ERROR,
                               "HW: invalid command packet,MID = 0x%x", (unsigned int)CFE_SB_MsgIdToValue(MsgId));
             break;
     }
@@ -232,7 +214,7 @@ void HW_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr)
 /* HW ground commands                                                     */
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
-void HW_APP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr)
+void HW_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr)
 {
     CFE_MSG_FcnCode_t CommandCode = 0;
 
@@ -243,33 +225,25 @@ void HW_APP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr)
     */
     switch (CommandCode)
     {
-        case HW_APP_NOOP_CC:
-            if (HW_APP_VerifyCmdLength(&SBBufPtr->Msg, sizeof(HW_APP_NoopCmd_t)))
+        case HW_NOOP_CC:
+            if (HW_VerifyCmdLength(&SBBufPtr->Msg, sizeof(HW_NoopCmd_t)))
             {
-                HW_APP_Noop((HW_APP_NoopCmd_t *)SBBufPtr);
+                HW_Noop((HW_NoopCmd_t *)SBBufPtr);
             }
 
             break;
 
-        case HW_APP_RESET_COUNTERS_CC:
-            if (HW_APP_VerifyCmdLength(&SBBufPtr->Msg, sizeof(HW_APP_ResetCountersCmd_t)))
+        case HW_RESET_COUNTERS_CC:
+            if (HW_VerifyCmdLength(&SBBufPtr->Msg, sizeof(HW_ResetCountersCmd_t)))
             {
-                HW_APP_ResetCounters((HW_APP_ResetCountersCmd_t *)SBBufPtr);
-            }
-
-            break;
-
-        case HW_APP_PROCESS_CC:
-            if (HW_APP_VerifyCmdLength(&SBBufPtr->Msg, sizeof(HW_APP_ProcessCmd_t)))
-            {
-                HW_APP_Process((HW_APP_ProcessCmd_t *)SBBufPtr);
+                HW_ResetCounters((HW_ResetCountersCmd_t *)SBBufPtr);
             }
 
             break;
 
         /* default case already found during FC vs length test */
         default:
-            CFE_EVS_SendEvent(HW_APP_COMMAND_ERR_EID, CFE_EVS_EventType_ERROR,
+            CFE_EVS_SendEvent(HW_COMMAND_ERR_EID, CFE_EVS_EventType_ERROR,
                               "Invalid ground command code: CC = %d", CommandCode);
             break;
     }
@@ -283,29 +257,19 @@ void HW_APP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr)
 /*         telemetry, packetize it and send it to the housekeeping task via   */
 /*         the software bus                                                   */
 /* * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * *  * *  * * * * */
-int32 HW_APP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg)
+int32 HW_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg)
 {
-    int i;
-
     /*
     ** Get command execution counters...
     */
-    HW_APP_Data.HkTlm.Payload.CommandErrorCounter = HW_APP_Data.ErrCounter;
-    HW_APP_Data.HkTlm.Payload.CommandCounter      = HW_APP_Data.CmdCounter;
+    HW_Data.HkTlm.Payload.CommandErrorCounter = HW_Data.ErrCounter;
+    HW_Data.HkTlm.Payload.CommandCounter      = HW_Data.CmdCounter;
 
     /*
     ** Send housekeeping telemetry packet...
     */
-    CFE_SB_TimeStampMsg(CFE_MSG_PTR(HW_APP_Data.HkTlm.TelemetryHeader));
-    CFE_SB_TransmitMsg(CFE_MSG_PTR(HW_APP_Data.HkTlm.TelemetryHeader), true);
-
-    /*
-    ** Manage any pending table loads, validations, etc.
-    */
-    for (i = 0; i < HW_APP_NUMBER_OF_TABLES; i++)
-    {
-        CFE_TBL_Manage(HW_APP_Data.TblHandles[i]);
-    }
+    CFE_SB_TimeStampMsg(CFE_MSG_PTR(HW_Data.HkTlm.TelemetryHeader));
+    CFE_SB_TransmitMsg(CFE_MSG_PTR(HW_Data.HkTlm.TelemetryHeader), true);
 
     return CFE_SUCCESS;
 }
@@ -315,12 +279,12 @@ int32 HW_APP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg)
 /* HW NOOP commands                                                       */
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
-int32 HW_APP_Noop(const HW_APP_NoopCmd_t *Msg)
+int32 HW_Noop(const HW_NoopCmd_t *Msg)
 {
-    HW_APP_Data.CmdCounter++;
+    HW_Data.CmdCounter++;
 
-    CFE_EVS_SendEvent(HW_APP_COMMANDNOP_INF_EID, CFE_EVS_EventType_INFORMATION, "HW: HELLO WORLD %s",
-                      HW_APP_VERSION);
+    CFE_EVS_SendEvent(HW_COMMANDNOP_INF_EID, CFE_EVS_EventType_INFORMATION, "HW: NOOP command %s",
+                      HW_VERSION);
 
     return CFE_SUCCESS;
 }
@@ -332,51 +296,12 @@ int32 HW_APP_Noop(const HW_APP_NoopCmd_t *Msg)
 /*         part of the task telemetry.                                        */
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * *  * *  * * * * */
-int32 HW_APP_ResetCounters(const HW_APP_ResetCountersCmd_t *Msg)
+int32 HW_ResetCounters(const HW_ResetCountersCmd_t *Msg)
 {
-    HW_APP_Data.CmdCounter = 0;
-    HW_APP_Data.ErrCounter = 0;
+    HW_Data.CmdCounter = 0;
+    HW_Data.ErrCounter = 0;
 
-    CFE_EVS_SendEvent(HW_APP_COMMANDRST_INF_EID, CFE_EVS_EventType_INFORMATION, "HW: RESET command");
-
-    return CFE_SUCCESS;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
-/*                                                                            */
-/*  Purpose:                                                                  */
-/*         This function Process Ground Station Command                       */
-/*                                                                            */
-/* * * * * * * * * * * * * * * * * * * * * * * *  * * * * * * *  * *  * * * * */
-int32 HW_APP_Process(const HW_APP_ProcessCmd_t *Msg)
-{
-    int32               status;
-    HW_APP_Table_t *TblPtr;
-    const char *        TableName = "HW_APP.HWAppTable";
-
-    /* HW Use of Table */
-
-    status = CFE_TBL_GetAddress((void *)&TblPtr, HW_APP_Data.TblHandles[0]);
-
-    if (status < CFE_SUCCESS)
-    {
-        CFE_ES_WriteToSysLog("HW App: Fail to get table address: 0x%08lx", (unsigned long)status);
-        return status;
-    }
-
-    CFE_ES_WriteToSysLog("HW App: Table Value 1: %d  Value 2: %d", TblPtr->Int1, TblPtr->Int2);
-
-    HW_APP_GetCrc(TableName);
-
-    status = CFE_TBL_ReleaseAddress(HW_APP_Data.TblHandles[0]);
-    if (status != CFE_SUCCESS)
-    {
-        CFE_ES_WriteToSysLog("HW App: Fail to release table address: 0x%08lx", (unsigned long)status);
-        return status;
-    }
-
-    /* Invoke a function provided by HW_APP_LIB */
-    SAMPLE_LIB_Function();
+    CFE_EVS_SendEvent(HW_COMMANDRST_INF_EID, CFE_EVS_EventType_INFORMATION, "HW: RESET command");
 
     return CFE_SUCCESS;
 }
@@ -386,7 +311,7 @@ int32 HW_APP_Process(const HW_APP_ProcessCmd_t *Msg)
 /* Verify command packet length                                               */
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
-bool HW_APP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength)
+bool HW_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength)
 {
     bool              result       = true;
     size_t            ActualLength = 0;
@@ -403,14 +328,14 @@ bool HW_APP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength)
         CFE_MSG_GetMsgId(MsgPtr, &MsgId);
         CFE_MSG_GetFcnCode(MsgPtr, &FcnCode);
 
-        CFE_EVS_SendEvent(HW_APP_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
+        CFE_EVS_SendEvent(HW_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
                           "Invalid Msg length: ID = 0x%X,  CC = %u, Len = %u, Expected = %u",
                           (unsigned int)CFE_SB_MsgIdToValue(MsgId), (unsigned int)FcnCode, (unsigned int)ActualLength,
                           (unsigned int)ExpectedLength);
 
         result = false;
 
-        HW_APP_Data.ErrCounter++;
+        HW_Data.ErrCounter++;
     }
 
     return result;
@@ -418,32 +343,10 @@ bool HW_APP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Verify contents of First Table buffer contents                  */
-/*                                                                 */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-int32 HW_APP_TblValidationFunc(void *TblData)
-{
-    int32               ReturnCode = CFE_SUCCESS;
-    HW_APP_Table_t *TblDataPtr = (HW_APP_Table_t *)TblData;
-
-    /*
-    ** HW Table Validation
-    */
-    if (TblDataPtr->Int1 > HW_APP_TBL_ELEMENT_1_MAX)
-    {
-        /* First element is out of range, return an appropriate error code */
-        ReturnCode = HW_APP_TABLE_OUT_OF_RANGE_ERR_CODE;
-    }
-
-    return ReturnCode;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/*                                                                 */
 /* Output CRC                                                      */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-void HW_APP_GetCrc(const char *TableName)
+void HW_GetCrc(const char *TableName)
 {
     int32          status;
     uint32         Crc;

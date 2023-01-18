@@ -19,19 +19,18 @@
 /**
  * @file
  *
- * Define hw app table
+ * Define HW App Message IDs
+ *
+ * \note The HW App assumes default configuration which uses V1 of message id implementation
  */
 
-#ifndef HW_APP_TABLE_H
-#define HW_APP_TABLE_H
+#ifndef HW_MSGIDS_H
+#define HW_MSGIDS_H
 
-/*
-** Table structure
-*/
-typedef struct
-{
-    uint16 Int1;
-    uint16 Int2;
-} HW_APP_Table_t;
+/* V1 Command Message IDs must be 0x18xx */
+#define HW_CMD_MID     0x1886
+#define HW_SEND_HK_MID 0x1887
+/* V1 Telemetry Message IDs must be 0x08xx */
+#define HW_HK_TLM_MID 0x0884
 
-#endif /* HW_APP_TABLE_H */
+#endif /* HW_MSGIDS_H */

@@ -19,18 +19,32 @@
 /**
  * @file
  *
- * Define HW App Message IDs
  *
- * \note The HW App assumes default configuration which uses V1 of message id implementation
+ * Purpose:
+ * Extra scaffolding functions for the hw unit test
+ *
+ * Notes:
+ * This is an extra UT-specific extern declaration
+ * to obtain access to an internal data structure
+ *
+ * UT often needs to modify internal data structures in ways that
+ * actual applications never would (bypassing the normal API) in
+ * order to exercise or set up for off-nominal cases.
  */
 
-#ifndef HW_APP_MSGIDS_H
-#define HW_APP_MSGIDS_H
+#ifndef UT_HW_H
+#define UT_HW_H
 
-/* V1 Command Message IDs must be 0x18xx */
-#define HW_APP_CMD_MID     0x1886
-#define HW_APP_SEND_HK_MID 0x1887
-/* V1 Telemetry Message IDs must be 0x08xx */
-#define HW_APP_HK_TLM_MID 0x0884
+/*
+ * Necessary to include these here to get the definition of the
+ * "HW_Data_t" typedef.
+ */
+#include "hw_events.h"
+#include "hw_app.h"
 
-#endif /* HW_APP_MSGIDS_H */
+/*
+ * Allow UT access to the global "HW_Data" object.
+ */
+extern HW_Data_t HW_Data;
+
+#endif /* UT_HW_H */

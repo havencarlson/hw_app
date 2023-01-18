@@ -24,20 +24,14 @@ include_directories(${PROJECT_SOURCE_DIR}/fsw/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 
-# Add a coverage test executable called "hw_app-ALL" that 
-# covers all of the functions in hw_app.  
+# Add a coverage test executable called "hw-ALL" that 
+# covers all of the functions in hw.  
 #
 # Also note in a more complex app/lib the coverage test can also
 # be broken down into smaller units (in which case one should use
 # a unique suffix other than "ALL" for each unit).  For example,
 # OSAL implements a separate coverage test per source unit.
-add_cfe_coverage_test(hw_app ALL 
-    "coveragetest/coveragetest_hw_app.c"
-    "${CFE_HW_APP_SOURCE_DIR}/fsw/src/hw_app.c"
+add_cfe_coverage_test(hw ALL 
+    "coveragetest/coveragetest_hw.c"
+    "${CFE_HW_SOURCE_DIR}/fsw/src/hw_app.c"
 )
-
-# The hw_app uses library functions provided by sample_lib so must be linked
-# with the sample_lib stub library (this is mainly just an example of how this 
-# can be done).
-add_cfe_coverage_dependency(hw_app ALL sample_lib)
-

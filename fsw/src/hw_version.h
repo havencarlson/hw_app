@@ -22,21 +22,21 @@
  *  The HW App header file containing version information
  */
 
-#ifndef HW_APP_VERSION_H
-#define HW_APP_VERSION_H
+#ifndef HW_VERSION_H
+#define HW_VERSION_H
 
 /* Development Build Macro Definitions */
 
-#define HW_APP_BUILD_NUMBER 35 /*!< Development Build: Number of commits since baseline */
-#define HW_APP_BUILD_BASELINE \
+#define HW_BUILD_NUMBER 35 /*!< Development Build: Number of commits since baseline */
+#define HW_BUILD_BASELINE \
     "v1.3.0-rc4" /*!< Development Build: git tag that is the base for the current development */
 
 /*
  * Version Macros, see \ref cfsversions for definitions.
  */
-#define HW_APP_MAJOR_VERSION 1  /*!< @brief Major version number. */
-#define HW_APP_MINOR_VERSION 1  /*!< @brief Minor version number. */
-#define HW_APP_REVISION      99 /*!< @brief Revision version number. Value of 99 indicates a development version.*/
+#define HW_MAJOR_VERSION 1  /*!< @brief Major version number. */
+#define HW_MINOR_VERSION 1  /*!< @brief Minor version number. */
+#define HW_REVISION      99 /*!< @brief Revision version number. Value of 99 indicates a development version.*/
 
 /*!
  * @brief Mission revision.
@@ -45,24 +45,24 @@
  * Values 1-254 are reserved for mission use to denote patches/customizations as needed. NOTE: Reserving 0 and 0xFF for
  * cFS open-source development use (pending resolution of nasa/cFS#440)
  */
-#define HW_APP_MISSION_REV 0xFF
+#define HW_MISSION_REV 0xFF
 
-#define HW_APP_STR_HELPER(x) #x /*!< @brief Helper function to concatenate strings from integer macros */
-#define HW_APP_STR(x) \
-    HW_APP_STR_HELPER(x) /*!< @brief Helper function to concatenate strings from integer macros */
+#define HW_STR_HELPER(x) #x /*!< @brief Helper function to concatenate strings from integer macros */
+#define HW_STR(x) \
+    HW_STR_HELPER(x) /*!< @brief Helper function to concatenate strings from integer macros */
 
 /*! @brief Development Build Version Number.
  * @details Baseline git tag + Number of commits since baseline. @n
  * See @ref cfsversions for format differences between development and release versions.
  */
-#define HW_APP_VERSION HW_APP_BUILD_BASELINE "+dev" HW_APP_STR(HW_APP_BUILD_NUMBER)
+#define HW_VERSION HW_BUILD_BASELINE "+dev" HW_STR(HW_BUILD_NUMBER)
 
 /*! @brief Development Build Version String.
  * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest
  * official version. @n See @ref cfsversions for format differences between development and release versions.
  */
-#define HW_APP_VERSION_STRING                       \
-    " HW App DEVELOPMENT BUILD " HW_APP_VERSION \
+#define HW_VERSION_STRING                       \
+    " HW App DEVELOPMENT BUILD " HW_VERSION \
     ", Last Official Release: v1.1.0" /* For full support please use this version */
 
-#endif /* HW_APP_VERSION_H */
+#endif /* HW_VERSION_H */

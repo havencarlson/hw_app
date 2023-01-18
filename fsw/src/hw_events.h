@@ -22,16 +22,16 @@
  * Define HW App Events IDs
  */
 
-#ifndef HW_APP_EVENTS_H
-#define HW_APP_EVENTS_H
+#ifndef HW_EVENTS_H
+#define HW_EVENTS_H
 
-#define HW_APP_RESERVED_EID          0
-#define HW_APP_STARTUP_INF_EID       1
-#define HW_APP_COMMAND_ERR_EID       2
-#define HW_APP_COMMANDNOP_INF_EID    3
-#define HW_APP_COMMANDRST_INF_EID    4
-#define HW_APP_INVALID_MSGID_ERR_EID 5
-#define HW_APP_LEN_ERR_EID           6
-#define HW_APP_PIPE_ERR_EID          7
+#define HW_RESERVED_EID          0
+#define HW_STARTUP_INF_EID       1
+#define HW_COMMAND_ERR_EID       2
+#define HW_COMMANDNOP_INF_EID    3
+#define HW_COMMANDRST_INF_EID    4
+#define HW_INVALID_MSGID_ERR_EID 5
+#define HW_LEN_ERR_EID           6
+#define HW_PIPE_ERR_EID          7
 
-#endif /* HW_APP_EVENTS_H */
+#endif /* HW_EVENTS_H */

@@ -34,21 +34,13 @@
 #include "cfe_sb.h"
 #include "cfe_es.h"
 
-#include "hw_app_perfids.h"
-#include "hw_app_msgids.h"
-#include "hw_app_msg.h"
+#include "hw_perfids.h"
+#include "hw_msgids.h"
+#include "hw_msg.h"
 
 /***********************************************************************/
-#define HW_APP_PIPE_DEPTH 32 /* Depth of the Command Pipe for Application */
+#define HW_PIPE_DEPTH 32 /* Depth of the Command Pipe for Application */
 
-#define HW_APP_NUMBER_OF_TABLES 1 /* Number of Table(s) */
-
-/* Define filenames of default data images for tables */
-#define HW_APP_TABLE_FILE "/cf/hw_app_tbl.tbl"
-
-#define HW_APP_TABLE_OUT_OF_RANGE_ERR_CODE -1
-
-#define HW_APP_TBL_ELEMENT_1_MAX 10
 /************************************************************************
 ** Type Definitions
 *************************************************************************/
@@ -67,7 +59,7 @@ typedef struct
     /*
     ** Housekeeping telemetry packet...
     */
-    HW_APP_HkTlm_t HkTlm;
+    HW_HkTlm_t HkTlm;
 
     /*
     ** Run Status variable used in the main processing loop
@@ -84,29 +76,24 @@ typedef struct
     */
     char   PipeName[CFE_MISSION_MAX_API_LEN];
     uint16 PipeDepth;
-
-    CFE_TBL_Handle_t TblHandles[HW_APP_NUMBER_OF_TABLES];
-} HW_APP_Data_t;
+} HW_Data_t;
 
 /****************************************************************************/
 /*
 ** Local function prototypes.
 **
-** Note: Except for the entry point (HW_APP_Main), these
+** Note: Except for the entry point (HW_Main), these
 **       functions are not called from any other source module.
 */
-void  HW_APP_Main(void);
-int32 HW_APP_Init(void);
-void  HW_APP_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr);
-void  HW_APP_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr);
-int32 HW_APP_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg);
-int32 HW_APP_ResetCounters(const HW_APP_ResetCountersCmd_t *Msg);
-int32 HW_APP_Process(const HW_APP_ProcessCmd_t *Msg);
-int32 HW_APP_Noop(const HW_APP_NoopCmd_t *Msg);
-void  HW_APP_GetCrc(const char *TableName);
+void  HW_Main(void);
+int32 HW_Init(void);
+void  HW_ProcessCommandPacket(CFE_SB_Buffer_t *SBBufPtr);
+void  HW_ProcessGroundCommand(CFE_SB_Buffer_t *SBBufPtr);
+int32 HW_ReportHousekeeping(const CFE_MSG_CommandHeader_t *Msg);
+int32 HW_ResetCounters(const HW_ResetCountersCmd_t *Msg);
+int32 HW_Noop(const HW_NoopCmd_t *Msg);
+void  HW_GetCrc(const char *TableName);
 
-int32 HW_APP_TblValidationFunc(void *TblData);
-
-bool HW_APP_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength);
+bool HW_VerifyCmdLength(CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength);
 
 #endif /* HW_APP_H */

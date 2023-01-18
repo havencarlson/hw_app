@@ -19,38 +19,12 @@
 /**
  * @file
  *
- * Common definitions for all hw_app coverage tests
+ * Define HW App Performance IDs
  */
 
-#ifndef HW_APP_COVERAGETEST_COMMON_H
-#define HW_APP_COVERAGETEST_COMMON_H
+#ifndef HW_PERFIDS_H
+#define HW_PERFIDS_H
 
-/*
- * Includes
- */
+#define HW_PERF_ID 91
 
-#include "utassert.h"
-#include "uttest.h"
-#include "utstubs.h"
-
-#include "cfe.h"
-#include "hw_app_events.h"
-#include "hw_app.h"
-#include "hw_app_table.h"
-
-/*
- * Macro to add a test case to the list of tests to execute
- */
-#define ADD_TEST(test) UtTest_Add((Test_##test), HW_UT_Setup, HW_UT_TearDown, #test)
-
-/*
- * Setup function prior to every test
- */
-void HW_UT_Setup(void);
-
-/*
- * Teardown function after every test
- */
-void HW_UT_TearDown(void);
-
-#endif /* HW_APP_COVERAGETEST_COMMON_H */
+#endif /* HW_PERFIDS_H */
